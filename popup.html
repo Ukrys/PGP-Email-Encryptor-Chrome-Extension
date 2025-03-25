@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PGP Email Encryptor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      width: 400px; 
+      height: 600px; 
+    }
+    input, button, textarea {
+      display: block;
+      width: 90%;
+      margin: 10px auto;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    textarea {
+      resize: none;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <h1>PGP Email Encryptor</h1>
+  
+  <!-- User id -->
+  <label for="userid">User ID (e.g., Name & Email):</label>
+  <input type="text" id="userid" placeholder="Your Email <your-email@example.com>">
+  
+  <!-- Passphrase -->
+  <label for="passphrase">Passphrase:</label>
+  <input type="password" id="passphrase" placeholder="Enter a secure passphrase">
+  
+  <!-- Button for generating key pair -->
+  <button id="generate-key">Generate Key Pair</button>
+  
+  <!-- Output public key -->
+  <label for="public-key">Public Key:</label>
+  <textarea id="public-key" readonly></textarea>
+  
+  <!-- Output private key -->
+  <label for="private-key">Private Key:</label>
+  <textarea id="private-key" readonly></textarea>
+
+  
+  <!-- Save someone else's public key -->
+  <h2>Save Someone's Public Key</h2>
+
+  <!-- Friend's userid -->
+  <label for="userid">User ID (e.g., Name & Email):</label>
+  <input type="text" id="friend-id" placeholder="Friend's Email <your-email@example.com>">
+  
+
+  <label for="friend-public-key">Public Key:</label>
+  <textarea id="friend-public-key" placeholder="Paste the public key here"></textarea>
+  <button id="save-public-key">Save Public Key</button>
+
+  <!-- <script type="module" src="popup.js"></script> -->
+  <script src="./openpgp.min.js"></script>
+  <script type="module" src="./popup.js"></script>
+
+</body>
+</html>
