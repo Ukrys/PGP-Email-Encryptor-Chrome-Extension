@@ -12,7 +12,7 @@
   "content_scripts": [
     {
       "matches": ["https://mail.google.com/*"],
-      "js": ["openpgp.min.js", "encrypt.js"]
+      "js": ["openpgp.min.js", "content.js"]
     }
   ],
   "action": {
