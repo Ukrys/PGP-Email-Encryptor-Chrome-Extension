@@ -105,8 +105,8 @@ document.getElementById("pubkeyInput").addEventListener("change", function (even
     const pemString = e.target.result;
     document.getElementById("import-friend-public-key").value = pemString;
     const fileName = file.name;
-    const nameWithoutExt = fileName.replace(/\.pub$/i, "");
-    document.getElementById("import-friend-id").value = nameWithoutExt;
+    const importUserId = fileName.replace(/\.pub$/i, "");
+    document.getElementById("import-friend-id").value = importUserId;
 
     // save to localstorage
     chrome.storage.local.get('accounts', (result) => {
@@ -116,19 +116,21 @@ document.getElementById("pubkeyInput").addEventListener("change", function (even
       }
 
       const accounts = result.accounts || {};
-      accounts[nameWithoutExt] = {
-        publicKey: pemString,
-        privateKey: '' // private key is empty, because it is not owned by the user
-      };
+      if (!(importUserId in accounts)) {
+        accounts[importUserId] = {
+          publicKey: pemString,
+          privateKey: '' // private key is empty, because it is not owned by the user
+        };
 
-      chrome.storage.local.set({ accounts }, () => {
-        if (chrome.runtime.lastError) {
-          console.error('Storage Failed:', chrome.runtime.lastError);
-        } else {
-          console.log('Successfully saved the public key to storage.');
-          alert('Public key import successfully! You can use it to encrypt when you finish write email');
-        }
-      });
+        chrome.storage.local.set({ accounts }, () => {
+          if (chrome.runtime.lastError) {
+            console.error('Storage Failed:', chrome.runtime.lastError);
+          } else {
+            console.log('Successfully saved the public key to storage.');
+            alert('Public key import successfully! You can use it to encrypt when you finish write email');
+          }
+        });
+      }
     });
   };
 
@@ -158,20 +160,21 @@ document.getElementById('save-public-key').addEventListener('click', () => {
       console.error('Reading Failed:', chrome.runtime.lastError);
       return;
     }
+    if (!(friendId in accounts)) {
+      const accounts = result.accounts || {};
+      accounts[friendId] = {
+        publicKey: publicKeyArmored,
+        privateKey: '' // private key is empty, because it is not owned by the user
+      };
 
-    const accounts = result.accounts || {};
-    accounts[friendId] = {
-      publicKey: publicKeyArmored,
-      privateKey: '' // private key is empty, because it is not owned by the user
-    };
-
-    chrome.storage.local.set({ accounts }, () => {
-      if (chrome.runtime.lastError) {
-        console.error('Storage Failed:', chrome.runtime.lastError);
-      } else {
-        console.log('Successfully saved the public key to storage.');
-        alert('Public key saved successfully!');
-      }
-    });
+      chrome.storage.local.set({ accounts }, () => {
+        if (chrome.runtime.lastError) {
+          console.error('Storage Failed:', chrome.runtime.lastError);
+        } else {
+          console.log('Successfully saved the public key to storage.');
+          alert('Public key saved successfully!');
+        }
+      });
+    }
   });
 });
