@@ -1,5 +1,15 @@
 // Description: This file contains the JavaScript code for the popup window.
 
+function downloadStringAsFile(content, filename) {
+  const blob = new Blob([content], { type:  "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 document.getElementById('generate-key').addEventListener('click', async () => {
   console.log('generate-key clicked');
   const userId = document.getElementById('userid').value.trim();
@@ -47,14 +57,14 @@ document.getElementById('generate-key').addEventListener('click', async () => {
 
     // remove the '-----BEGIN PGP PRIVATE KEY BLOCK-----' and '-----END PGP PRIVATE KEY BLOCK-----' from the private key
     const stripped_privateKey = privateKey
-    .replace(/-----BEGIN PGP PRIVATE KEY BLOCK-----/, '')
-    .replace(/-----END PGP PRIVATE KEY BLOCK-----/, '')
-    .trim();
+    // .replace(/-----BEGIN PGP PRIVATE KEY BLOCK-----/, '')
+    // .replace(/-----END PGP PRIVATE KEY BLOCK-----/, '')
+    // .trim();
 
     const stripped_publicKey = publicKey
-    .replace(/-----BEGIN PGP PUBLIC KEY BLOCK-----/, '')
-    .replace(/-----END PGP PUBLIC KEY BLOCK-----/, '')
-    .trim();
+    // .replace(/-----BEGIN PGP PUBLIC KEY BLOCK-----/, '')
+    // .replace(/-----END PGP PUBLIC KEY BLOCK-----/, '')
+    // .trim();
 
     // show the key pair in the popup
     document.getElementById('public-key').value = stripped_publicKey;
@@ -66,6 +76,63 @@ document.getElementById('generate-key').addEventListener('click', async () => {
     console.error('Error generating key pair:', error);
     alert('Failed to generate key pair. See console for details.');
   }
+});
+
+// download public key
+document.getElementById('download-public-key').addEventListener('click', () => {
+  downloadStringAsFile(
+    document.getElementById('public-key').value.trim(),
+    document.getElementById('userid').value.trim() + ".pub");
+});
+// download private key
+document.getElementById('download-private-key').addEventListener('click', () => {
+  downloadStringAsFile(
+    document.getElementById('private-key').value.trim(),
+    document.getElementById('userid').value.trim() + ".pem");
+});
+// import public key
+document.getElementById('import-public-key').addEventListener('click', () => {
+  document.getElementById("pubkeyInput").click();
+});
+
+document.getElementById("pubkeyInput").addEventListener("change", function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    const pemString = e.target.result;
+    document.getElementById("import-friend-public-key").value = pemString;
+    const fileName = file.name;
+    const nameWithoutExt = fileName.replace(/\.pub$/i, "");
+    document.getElementById("import-friend-id").value = nameWithoutExt;
+
+    // save to localstorage
+    chrome.storage.local.get('accounts', (result) => {
+      if (chrome.runtime.lastError) {
+        console.error('Reading Failed:', chrome.runtime.lastError);
+        return;
+      }
+
+      const accounts = result.accounts || {};
+      accounts[nameWithoutExt] = {
+        publicKey: pemString,
+        privateKey: '' // private key is empty, because it is not owned by the user
+      };
+
+      chrome.storage.local.set({ accounts }, () => {
+        if (chrome.runtime.lastError) {
+          console.error('Storage Failed:', chrome.runtime.lastError);
+        } else {
+          console.log('Successfully saved the public key to storage.');
+          alert('Public key import successfully! You can use it to encrypt when you finish write email');
+        }
+      });
+    });
+  };
+
+  reader.readAsText(file);
 });
 
 document.getElementById('save-public-key').addEventListener('click', () => {

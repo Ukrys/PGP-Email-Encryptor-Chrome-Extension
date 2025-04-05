@@ -53,10 +53,12 @@
   <!-- Output public key -->
   <label for="public-key">Public Key:</label>
   <textarea id="public-key" readonly></textarea>
+  <button id="download-public-key">download</button>
   
   <!-- Output private key -->
   <label for="private-key">Private Key:</label>
   <textarea id="private-key" readonly></textarea>
+  <button id="download-private-key">download</button>
 
   
   <!-- Save someone else's public key -->
@@ -70,6 +72,19 @@
   <label for="friend-public-key">Public Key:</label>
   <textarea id="friend-public-key" placeholder="Paste the public key here"></textarea>
   <button id="save-public-key">Save Public Key</button>
+
+
+  <!-- Save someone else's public key -->
+  <h2>Import Someone's Public Key</h2>
+
+  <!-- Friend's userid -->
+  <label for="userid">User ID (e.g., Name & Email):</label>
+  <input type="text" id="import-friend-id" placeholder="Friend's Email <your-email@example.com>" readonly>
+
+  <label for="friend-public-key">Public Key:</label>
+  <textarea id="import-friend-public-key" placeholder="Paste the public key here" readonly></textarea>
+  <button id="import-public-key">Import Public Key</button>
+  <input type="file" id="pubkeyInput" accept=".pub" style="display: none;" />
 
   <!-- <script type="module" src="popup.js"></script> -->
   <script src="./openpgp.min.js"></script>
