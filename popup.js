@@ -1,5 +1,4 @@
 // Description: This file contains the JavaScript code for the popup window.
-
 function downloadStringAsFile(content, filename) {
   const blob = new Blob([content], { type:  "text/plain" });
   const url = URL.createObjectURL(blob);
@@ -54,18 +53,8 @@ document.getElementById('generate-key').addEventListener('click', async () => {
       });
     });
 
-
-    // remove the '-----BEGIN PGP PRIVATE KEY BLOCK-----' and '-----END PGP PRIVATE KEY BLOCK-----' from the private key
     const stripped_privateKey = privateKey
-    // .replace(/-----BEGIN PGP PRIVATE KEY BLOCK-----/, '')
-    // .replace(/-----END PGP PRIVATE KEY BLOCK-----/, '')
-    // .trim();
-
     const stripped_publicKey = publicKey
-    // .replace(/-----BEGIN PGP PUBLIC KEY BLOCK-----/, '')
-    // .replace(/-----END PGP PUBLIC KEY BLOCK-----/, '')
-    // .trim();
-
     // show the key pair in the popup
     document.getElementById('public-key').value = stripped_publicKey;
     document.getElementById('private-key').value = stripped_privateKey;

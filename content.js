@@ -3,23 +3,11 @@ window.openpgp = openpgp
 function createEncryptButton() {
   const button = document.createElement('button');
   button.id = 'encrypt-email-button';
-  // Create a container for flexible layout
-  const contentDiv = document.createElement('div');
-  contentDiv.style.display = 'flex';
-  contentDiv.style.alignItems = 'center';
-  contentDiv.style.justifyContent = 'center';
-  contentDiv.style.width = '100%';
-  contentDiv.style.overflow = 'hidden';
-  contentDiv.style.whiteSpace = 'nowrap';
-  contentDiv.style.textOverflow = 'ellipsis';
+
+  // Simplify layout - use button element directly instead of extra internal div
+  button.innerHTML = '🔒 Encrypt';
   
-  // Add text content
-  contentDiv.textContent = '🔒 Encrypt';
-  
-  // Add the content to the button
-  button.appendChild(contentDiv);
-  
-  // Apply styles to match Gmail's Compose button
+  // Apply modern styles matching Gmail's design language
   button.style.display = 'flex';
   button.style.alignItems = 'center';
   button.style.justifyContent = 'center';
@@ -32,54 +20,75 @@ function createEncryptButton() {
   button.style.fontFamily = 'Google Sans, Roboto, sans-serif';
   button.style.fontSize = '14px';
   button.style.fontWeight = '500';
-  button.style.minWidth = 'min-content';
+  button.style.minWidth = 'fit-content';
   button.style.maxWidth = '100%';
-  button.style.marginBottom = '16px';
-  button.style.marginLeft = '8px';
-  button.style.marginRight = '8px';
-  button.style.marginTop = '8px';
+  button.style.margin = '8px';
+  button.style.overflow = 'hidden';
+  button.style.textOverflow = 'ellipsis';
+  button.style.whiteSpace = 'nowrap';
   button.style.boxSizing = 'border-box';
-  button.style.transition = 'box-shadow .08s linear,min-width .15s cubic-bezier(0.4,0.0,0.2,1)';
+  button.style.transition = 'background-color 0.2s ease, box-shadow 0.2s ease';
   
-    // Responsive handling for narrow sidebar
-    const checkWidth = () => {
-      const sidebarWidth = button.parentElement ? button.parentElement.offsetWidth : 0;
-      if (sidebarWidth < 120) {
-        // When sidebar is collapsed/narrow
-        contentDiv.style.display = 'inline-block';
-        contentDiv.style.width = 'fit-content';
-        contentDiv.style.maxWidth = (sidebarWidth - 30) + 'px'; // Adjust based on padding
-        button.style.justifyContent = 'center';
-        button.style.padding = '10px';
+  // Improved responsive handling
+  const handleResponsiveLayout = () => {
+    const parentWidth = button.parentElement ? button.parentElement.offsetWidth : 0;
+    
+    if (parentWidth < 120) {
+      // Narrow sidebar mode - icon only
+      button.style.padding = '10px';
+      button.style.minWidth = 'unset';
+      button.style.width = (parentWidth - 16) + 'px';
+      button.style.justifyContent = 'center';
+      button.innerHTML = '🔒';
+    } else if (parentWidth < 180) {
+      // Medium width - compact text
+      button.style.padding = '10px 12px';
+      button.style.width = 'auto';
+      button.innerHTML = '🔒 Encrypt';
+    } else {
+      // Full width - normal display
+      button.style.padding = '10px 15px';
+      button.style.width = 'auto';
+      button.innerHTML = '🔒 Encrypt';
+    }
+  };
+  
+  // Initialize responsive behavior
+  setTimeout(() => {
+    if (button.parentElement) {
+      // Use ResizeObserver for better performance when available
+      if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver(handleResponsiveLayout);
+        resizeObserver.observe(button.parentElement);
       } else {
-        // When sidebar is expanded
-        contentDiv.style.display = 'block';
-        contentDiv.style.width = '100%';
-        button.style.padding = '10px 15px';
-      }
-    };
-    
-    // Set up a MutationObserver to watch for DOM changes
-    setTimeout(() => {
-      if (button.parentElement) {
-        const observer = new MutationObserver(checkWidth);
+        // Fallback to traditional methods
+        const observer = new MutationObserver(handleResponsiveLayout);
         observer.observe(button.parentElement, { attributes: true, subtree: true });
-        checkWidth(); // Initial check
-        
-        // Also check on window resize
-        window.addEventListener('resize', checkWidth);
+        window.addEventListener('resize', handleResponsiveLayout);
       }
-    }, 100);
-    
-    // Add hover effect
-    button.onmouseover = function() {
-      this.style.boxShadow = '0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149)';
-    };
-    button.onmouseout = function() {
-      this.style.boxShadow = 'none';
-    };
-
-
+      
+      handleResponsiveLayout(); // Initial check
+    }
+  }, 50);
+  
+  // Enhanced interaction effects
+  button.addEventListener('mouseover', function() {
+    this.style.backgroundColor = '#a1d2ff'; // Lighter blue on hover
+    this.style.boxShadow = '0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15)';
+  });
+  
+  button.addEventListener('mouseout', function() {
+    this.style.backgroundColor = '#c2e7ff'; // Return to original color
+    this.style.boxShadow = 'none';
+  });
+  
+  button.addEventListener('mousedown', function() {
+    this.style.backgroundColor = '#8bc4ff'; // Darker blue when pressed
+  });
+  
+  button.addEventListener('mouseup', function() {
+    this.style.backgroundColor = '#a1d2ff'; // Return to hover color after click
+  });
 
   button.addEventListener('click', () => {
     const publicKeyArmored = chrome.storage.local.get('accounts', (result)=>{
@@ -105,19 +114,9 @@ function createEncryptButton() {
 function createDecryptButton() {
   const button = document.createElement('button');
   button.id = 'decrypt-email-button';
-  // Create a container for flexible layout
-  const contentDiv = document.createElement('div');
-  contentDiv.style.display = 'flex';
-  contentDiv.style.alignItems = 'center';
-  contentDiv.style.justifyContent = 'center';
-  contentDiv.style.width = '100%';
-  contentDiv.style.overflow = 'hidden';
-  contentDiv.style.whiteSpace = 'nowrap';
-  contentDiv.style.textOverflow = 'ellipsis';
-  contentDiv.textContent = '🔓 Decrypt';
+  button.innerHTML = '🔓 Decrypt';
 
-  button.appendChild(contentDiv);
-  // Apply styles to match Gmail's Compose button
+  // Apply modern styles matching Gmail's design language
   button.style.display = 'flex';
   button.style.alignItems = 'center';
   button.style.justifyContent = 'center';
@@ -130,52 +129,75 @@ function createDecryptButton() {
   button.style.fontFamily = 'Google Sans, Roboto, sans-serif';
   button.style.fontSize = '14px';
   button.style.fontWeight = '500';
-  button.style.minWidth = 'min-content';
+  button.style.minWidth = 'fit-content';
   button.style.maxWidth = '100%';
-  button.style.marginBottom = '16px';
-  button.style.marginLeft = '8px';
-  button.style.marginRight = '8px';
-  button.style.marginTop = '8px';
+  button.style.margin = '8px';
+  button.style.overflow = 'hidden';
+  button.style.textOverflow = 'ellipsis';
+  button.style.whiteSpace = 'nowrap';
   button.style.boxSizing = 'border-box';
-  button.style.transition = 'box-shadow .08s linear,min-width .15s cubic-bezier(0.4,0.0,0.2,1)';
-
-  // Responsive handling for narrow sidebar
-  const checkWidth = () => {
-    const sidebarWidth = button.parentElement ? button.parentElement.offsetWidth : 0;
-    if (sidebarWidth < 120) {
-      // When sidebar is collapsed/narrow
-      contentDiv.style.display = 'inline-block';
-      contentDiv.style.width = 'fit-content';
-      contentDiv.style.maxWidth = (sidebarWidth - 30) + 'px'; // Adjust based on padding
-      button.style.justifyContent = 'center';
+  button.style.transition = 'background-color 0.2s ease, box-shadow 0.2s ease';
+  
+  // Improved responsive handling
+  const handleResponsiveLayout = () => {
+    const parentWidth = button.parentElement ? button.parentElement.offsetWidth : 0;
+    
+    if (parentWidth < 120) {
+      // Narrow sidebar mode - icon only
       button.style.padding = '10px';
+      button.style.minWidth = 'unset';
+      button.style.width = (parentWidth - 16) + 'px';
+      button.style.justifyContent = 'center';
+      button.innerHTML = '🔓';
+    } else if (parentWidth < 180) {
+      // Medium width - compact text
+      button.style.padding = '10px 12px';
+      button.style.width = 'auto';
+      button.innerHTML = '🔓 Decrypt';
     } else {
-      // When sidebar is expanded
-      contentDiv.style.display = 'block';
-      contentDiv.style.width = '100%';
+      // Full width - normal displays
       button.style.padding = '10px 15px';
+      button.style.width = 'auto';
+      button.innerHTML = '🔓 Decrypt';
     }
   };
   
-  // Set up a MutationObserver to watch for DOM changes
+  // Initialize responsive behavior
   setTimeout(() => {
     if (button.parentElement) {
-      const observer = new MutationObserver(checkWidth);
-      observer.observe(button.parentElement, { attributes: true, subtree: true });
-      checkWidth(); // Initial check
+      // Use ResizeObserver for better performance when available
+      if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver(handleResponsiveLayout);
+        resizeObserver.observe(button.parentElement);
+      } else {
+        // Fallback to traditional methods
+        const observer = new MutationObserver(handleResponsiveLayout);
+        observer.observe(button.parentElement, { attributes: true, subtree: true });
+        window.addEventListener('resize', handleResponsiveLayout);
+      }
       
-      // Also check on window resize
-      window.addEventListener('resize', checkWidth);
+      handleResponsiveLayout(); // Initial check
     }
-  }, 100);
-
-  // Add hover effect
-  button.onmouseover = function() {
-    this.style.boxShadow = '0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149)';
-  };
-  button.onmouseout = function() {
+  }, 50);
+  
+  // Enhanced interaction effects
+  button.addEventListener('mouseover', function() {
+    this.style.backgroundColor = '#a1d2ff'; // Lighter blue on hover
+    this.style.boxShadow = '0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15)';
+  });
+  
+  button.addEventListener('mouseout', function() {
+    this.style.backgroundColor = '#c2e7ff'; // Return to original color
     this.style.boxShadow = 'none';
-  };
+  });
+  
+  button.addEventListener('mousedown', function() {
+    this.style.backgroundColor = '#8bc4ff'; // Darker blue when pressed
+  });
+  
+  button.addEventListener('mouseup', function() {
+    this.style.backgroundColor = '#a1d2ff'; // Return to hover color after click
+  });
 
   button.addEventListener('click', () => {
     chrome.storage.local.get('accounts', (result) => {
@@ -253,36 +275,6 @@ async function encryptEmailContent(publicKeyArmored) {
   }
   
 }
-
-// async function decryptEmailContent(privateKeyArmored) {
-//   const textArea = document.getElementsByClassName('a3s aiL')[0];
-//   if (!textArea) {
-//     console.error('Email textarea not found.');
-//     return;
-//   }
-//   const replace_text = 'The content belowed is encrypted by sender. Please decrypt using your own private key.\n';
-//   const emailContent = textArea.textContent.replace(replace_text, '').trim(); // get the email content from the textarea
-//   if (!emailContent) {
-//     console.error('Email content is empty.');
-//     return;
-//   }
-
-//   try {
-//     const privateKey = await openpgp.readKey({ armoredKey: privateKeyArmored });
-
-//     const decrypted = await openpgp.decrypt({
-//       message: await openpgp.readMessage({ armoredMessage: emailContent }), // parse armored message
-//       decryptionKeys: privateKey, // decrypt with the private key
-//     });
-
-//     textArea.textContent = `Decrypted content:\n\n${decrypted.data}`;
-//     console.log('Email content decrypted successfully.');
-//   } catch (error) {
-//     console.error('Error decrypting email content:', error);
-//     alert('Failed to decrypt email content. Check the console for details.');
-//   }
-  
-// }
 
 async function decryptEmailContent(privateKeyArmored) {
   const textArea = document.getElementsByClassName('a3s aiL')[0];
