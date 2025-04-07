@@ -17,7 +17,7 @@
    - Decrypt received emails using your private key and passphrase.
 4. **Save/Import Public Keys**:
    - Save a friend's public key for future encryption.
-   - Import public keys from `.pub` files.
+   - Import public keys from `.pub` files and automatically add them to the list.
 5. **Export Keys**:
    - Download your public and private keys for backup or use on other devices.
 
