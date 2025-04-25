@@ -1,4 +1,32 @@
 // Description: This file contains the JavaScript code for the popup window.
+
+// Navigate between different sections of the popup
+document.addEventListener('DOMContentLoaded', () => {
+  const navButtons = document.querySelectorAll('.nav-button');
+  
+  navButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // hide all sections
+      document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+      });
+      
+      // remove active class from all buttons
+      navButtons.forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // show the clicked section
+      const sectionId = button.getAttribute('data-section');
+      document.getElementById(sectionId).classList.add('active');
+      
+      // add active class to the clicked button
+      button.classList.add('active');
+    });
+  });
+});
+
+
 function downloadStringAsFile(content, filename) {
   const blob = new Blob([content], { type:  "text/plain" });
   const url = URL.createObjectURL(blob);
@@ -53,8 +81,18 @@ document.getElementById('generate-key').addEventListener('click', async () => {
       });
     });
 
+
+    // remove the '-----BEGIN PGP PRIVATE KEY BLOCK-----' and '-----END PGP PRIVATE KEY BLOCK-----' from the private key
     const stripped_privateKey = privateKey
+    // .replace(/-----BEGIN PGP PRIVATE KEY BLOCK-----/, '')
+    // .replace(/-----END PGP PRIVATE KEY BLOCK-----/, '')
+    // .trim();
+
     const stripped_publicKey = publicKey
+    // .replace(/-----BEGIN PGP PUBLIC KEY BLOCK-----/, '')
+    // .replace(/-----END PGP PUBLIC KEY BLOCK-----/, '')
+    // .trim();
+
     // show the key pair in the popup
     document.getElementById('public-key').value = stripped_publicKey;
     document.getElementById('private-key').value = stripped_privateKey;

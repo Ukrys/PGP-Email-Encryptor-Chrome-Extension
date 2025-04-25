@@ -5,90 +5,224 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PGP Email Encryptor</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
+    :root {
+      --primary-color: #4CAF50;
+      --primary-hover: #45a049;
+      --text-color: #333;
+      --border-color: #ddd;
+      --bg-color: #f9f9f9;
+    }
+    
+    * {
+      box-sizing: border-box;
       margin: 0;
-      padding: 20px;
-      width: 400px; 
-      height: 600px; 
+      padding: 0;
     }
-    input, button, textarea {
-      display: block;
-      width: 90%;
-      margin: 10px auto;
-      padding: 10px;
-      font-size: 16px;
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-color);
+      width: 400px;
+      height: 600px;
+      overflow-y: auto;
     }
-    button {
-      background-color: #4CAF50;
+    
+    header {
+      background-color: var(--primary-color);
       color: white;
+      padding: 15px 0;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+    
+    h2 {
+      font-size: 1.2rem;
+      margin: 15px 0;
+      text-align: center;
+    }
+    
+    .navigation {
+      display: flex;
+      justify-content: center;
+      background-color: #f5f5f5;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .nav-button {
+      padding: 12px 15px;
+      background: none;
       border: none;
+      border-bottom: 3px solid transparent;
       cursor: pointer;
-      border-radius: 5px;
+      font-weight: 600;
+      color: var(--text-color);
+      transition: all 0.3s;
     }
-    button:hover {
-      background-color: #45a049;
+    
+    .nav-button.active {
+      border-bottom: 3px solid var(--primary-color);
+      color: var(--primary-color);
     }
+    
+    .nav-button:hover {
+      background-color: #e9e9e9;
+    }
+    
+    .section {
+      padding: 20px;
+      display: none;
+    }
+    
+    .section.active {
+      display: block;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: border 0.3s;
+    }
+    
+    input:focus, textarea:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+    
     textarea {
       resize: none;
       height: 100px;
+      font-family: monospace;
+      font-size: 0.8rem;
+    }
+    
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 10px 0;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+    
+    .key-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .key-actions button {
+      flex: 1;
     }
   </style>
 </head>
 <body>
-  <h1>PGP Email Encryptor</h1>
+  <header>
+    <h1>PGP Email Encryptor</h1>
+  </header>
   
-  <!-- User id -->
-  <label for="userid">User ID (e.g., Name & Email):</label>
-  <input type="text" id="userid" placeholder="Your Email <your-email@example.com>">
+  <div class="navigation">
+    <button class="nav-button active" data-section="generate">Generate Keys</button>
+    <button class="nav-button" data-section="save">Save Key</button>
+    <button class="nav-button" data-section="import">Import Key</button>
+  </div>
   
-  <!-- Passphrase -->
-  <label for="passphrase">Passphrase:</label>
-  <input type="password" id="passphrase" placeholder="Enter a secure passphrase">
+  <!-- Generate Key Pair Section -->
+  <section id="generate" class="section active">
+    <h2>Generate New Key Pair</h2>
+    
+    <div class="form-group">
+      <label for="userid">User ID (e.g., Name & Email):</label>
+      <input type="text" id="userid" placeholder="Your Email <your-email@example.com>">
+    </div>
+    
+    <div class="form-group">
+      <label for="passphrase">Passphrase:</label>
+      <input type="password" id="passphrase" placeholder="Enter a secure passphrase">
+    </div>
+    
+    <button id="generate-key">Generate Key Pair</button>
+    
+    <div class="form-group">
+      <label for="public-key">Public Key:</label>
+      <textarea id="public-key" readonly></textarea>
+      <button id="download-public-key">Download Public Key</button>
+    </div>
+    
+    <div class="form-group">
+      <label for="private-key">Private Key:</label>
+      <textarea id="private-key" readonly></textarea>
+      <button id="download-private-key">Download Private Key</button>
+    </div>
+  </section>
   
-  <!-- Button for generating key pair -->
-  <button id="generate-key">Generate Key Pair</button>
+  <!-- Save Public Key Section -->
+  <section id="save" class="section">
+    <h2>Save Someone's Public Key</h2>
+    
+    <div class="form-group">
+      <label for="friend-id">User ID (e.g., Name & Email):</label>
+      <input type="text" id="friend-id" placeholder="Friend's Email <friend-email@example.com>">
+    </div>
+    
+    <div class="form-group">
+      <label for="friend-public-key">Public Key:</label>
+      <textarea id="friend-public-key" placeholder="Paste the public key here"></textarea>
+      <button id="save-public-key">Save Public Key</button>
+    </div>
+  </section>
   
-  <!-- Output public key -->
-  <label for="public-key">Public Key:</label>
-  <textarea id="public-key" readonly></textarea>
-  <button id="download-public-key">download</button>
-  
-  <!-- Output private key -->
-  <label for="private-key">Private Key:</label>
-  <textarea id="private-key" readonly></textarea>
-  <button id="download-private-key">download</button>
+  <!-- Import Public Key Section -->
+  <section id="import" class="section">
+    <h2>Import Someone's Public Key</h2>
+    
+    <div class="form-group">
+      <label for="import-friend-id">User ID (e.g., Name & Email):</label>
+      <input type="text" id="import-friend-id" placeholder="Friend's Email <friend-email@example.com>" readonly>
+    </div>
+    
+    <div class="form-group">
+      <label for="import-friend-public-key">Public Key:</label>
+      <textarea id="import-friend-public-key" placeholder="Paste the public key here" readonly></textarea>
+    </div>
+    
+    <div class="key-actions">
+      <button id="import-public-key">Import Public Key</button>
+    </div>
+    
+    <input type="file" id="pubkeyInput" accept=".pub" style="display: none;" />
+  </section>
 
-  
-  <!-- Save someone else's public key -->
-  <h2>Save Someone's Public Key</h2>
-
-  <!-- Friend's userid -->
-  <label for="userid">User ID (e.g., Name & Email):</label>
-  <input type="text" id="friend-id" placeholder="Friend's Email <your-email@example.com>">
-  
-
-  <label for="friend-public-key">Public Key:</label>
-  <textarea id="friend-public-key" placeholder="Paste the public key here"></textarea>
-  <button id="save-public-key">Save Public Key</button>
-
-
-  <!-- Save someone else's public key -->
-  <h2>Import Someone's Public Key</h2>
-
-  <!-- Friend's userid -->
-  <label for="userid">User ID (e.g., Name & Email):</label>
-  <input type="text" id="import-friend-id" placeholder="Friend's Email <your-email@example.com>" readonly>
-
-  <label for="friend-public-key">Public Key:</label>
-  <textarea id="import-friend-public-key" placeholder="Paste the public key here" readonly></textarea>
-  <button id="import-public-key">Import Public Key</button>
-  <input type="file" id="pubkeyInput" accept=".pub" style="display: none;" />
-
-  <!-- <script type="module" src="popup.js"></script> -->
   <script src="./openpgp.min.js"></script>
   <script type="module" src="./popup.js"></script>
-
 </body>
 </html>
