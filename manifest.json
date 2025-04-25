@@ -11,7 +11,7 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://mail.google.com/*"],
+      "matches": ["<all_urls>"],
       "js": ["openpgp.min.js", "content.js"]
     }
   ],
@@ -26,7 +26,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "popup.js"
+        "popup.js", "content.js", "openpgp.min.js"
       ],
       "matches": ["<all_urls>"]
     }
